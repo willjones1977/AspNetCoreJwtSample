@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+using ASPNetCoreJWTSample.Data;
+using ASPNetCoreJWTSample.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ASPNetCoreJWTSample.Controllers
 {
-    // [Route("api/[controller]/[action]")]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
+    // [Route("api/[controller]")]
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult View()
+        private InvoiceContext _invoiceContext;
+        public InvoiceController(InvoiceContext invoiceContext)
         {
-            return Ok("You can view invoices!");
+            _invoiceContext = invoiceContext;
         }
 
         [Authorize(Roles = "Administrator,Accountant")]
@@ -29,19 +28,9 @@ namespace ASPNetCoreJWTSample.Controllers
 
         [Authorize(Roles = "Administrator,Accountant")]
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<Invoice> Get(int id)
         {
-            if(id == 1)
-            {
-                return Ok($"Here is the invoice number 1!");
-                
-            }
-            if (id == 2)
-            {
-                return Ok($"Here is the invoice number 2!");
-
-            }
-            return NotFound();
+            return await _invoiceContext.Invoices.FindAsync(id);
         }
 
         [Authorize(Roles = "Administrator")]
